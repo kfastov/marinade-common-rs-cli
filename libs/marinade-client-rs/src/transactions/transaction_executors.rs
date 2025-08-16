@@ -1,7 +1,7 @@
 use crate::transactions::prepared_transaction::PreparedTransaction;
 use crate::transactions::transaction_builder::TransactionBuilder;
 use crate::transactions::transaction_instruction::print_base64;
-use anchor_client::RequestBuilder;
+use crate::RequestBuilder;
 use anyhow::bail;
 use log::{debug, error, info, warn};
 use solana_client::client_error::ClientError as SolanaClientError;
@@ -33,6 +33,7 @@ pub fn log_execution(
                                 accounts: _,
                                 return_data: _,
                                 units_consumed: _,
+                                ..
                             },
                         ),
                     ..
@@ -109,6 +110,7 @@ pub fn log_simulation(
                             accounts: _,
                             units_consumed: _,
                             return_data: _,
+                            ..
                         },
                     ),
                 ..
@@ -180,8 +182,8 @@ where
     )
 }
 
-pub fn execute_anchor_builder_with_config<C: Deref<Target = dynsigner::DynSigner> + Clone>(
-    anchor_builder: RequestBuilder<C>,
+pub fn execute_anchor_builder_with_config<'a, C: Deref<Target = dynsigner::DynSigner> + Clone>(
+    anchor_builder: RequestBuilder<'a, C>,
     rpc_client: &RpcClient,
     preflight_config: RpcSendTransactionConfig,
     simulate: bool,
@@ -196,8 +198,8 @@ pub fn execute_anchor_builder_with_config<C: Deref<Target = dynsigner::DynSigner
     )
 }
 
-pub fn execute_anchor_builder<C: Deref<Target = dynsigner::DynSigner> + Clone>(
-    anchor_builder: RequestBuilder<C>,
+pub fn execute_anchor_builder<'a, C: Deref<Target = dynsigner::DynSigner> + Clone>(
+    anchor_builder: RequestBuilder<'a, C>,
     rpc_client: &RpcClient,
     skip_preflight: bool,
     simulate: bool,

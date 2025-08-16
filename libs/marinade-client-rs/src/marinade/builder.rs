@@ -10,7 +10,7 @@ use crate::marinade::rpc_marinade::RpcMarinade;
 use crate::marinade::verifiers::{
     verify_admin_authority, verify_manager_authority, verify_pause_authority,
 };
-use anchor_client::RequestBuilder;
+use crate::RequestBuilder;
 use dynsigner::PubkeyOrKeypair;
 use marinade_finance::instructions::{ChangeAuthorityData, ConfigMarinadeParams};
 use marinade_finance::state::Fee;
@@ -27,7 +27,7 @@ pub trait MarinadeRequestBuilder<'a, C> {
         validator_vote: Pubkey,
         score: u32,
         rent_payer: &'a PubkeyOrKeypair,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn set_validator_score(
         &'a self,
@@ -35,13 +35,13 @@ pub trait MarinadeRequestBuilder<'a, C> {
         validator_vote: Pubkey,
         validator_index: u32,
         score: u32,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn config_validator_system(
         &'a self,
         validator_manager_authority: &'a PubkeyOrKeypair,
         extra_runs: u32,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn emergency_unstake(
         &'a self,
@@ -49,27 +49,27 @@ pub trait MarinadeRequestBuilder<'a, C> {
         stake_account: Pubkey,
         stake_index: u32,
         validator_index: u32,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn remove_validator(
         &'a self,
         validator_manager_authority: &'a PubkeyOrKeypair,
         validator_vote: Pubkey,
         validator_index: u32,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn add_liquidity(
         &'a self,
         transfer_from: &'a PubkeyOrKeypair,
         mint_to: Pubkey,
         lamports: u64,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn change_authority(
         &'a self,
         admin_authority: &'a PubkeyOrKeypair,
         params: ChangeAuthorityData,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn deactivate_stake(
         &'a self,
@@ -78,14 +78,14 @@ pub trait MarinadeRequestBuilder<'a, C> {
         split_stake_rent_payer: &'a PubkeyOrKeypair,
         stake_index: u32,
         validator_index: u32,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn deposit(
         &'a self,
         transfer_from: &'a PubkeyOrKeypair,
         mint_to: Pubkey,
         lamports: u64,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn deposit_stake_account(
         &'a self,
@@ -95,7 +95,7 @@ pub trait MarinadeRequestBuilder<'a, C> {
         validator_index: u32,
         validator_vote: Pubkey,
         rent_payer: &'a PubkeyOrKeypair,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn partial_unstake(
         &'a self,
@@ -106,7 +106,7 @@ pub trait MarinadeRequestBuilder<'a, C> {
         split_stake_account: &'a PubkeyOrKeypair,
         split_stake_rent_payer: &'a PubkeyOrKeypair,
         desired_amount: u64,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn initialize(
         &'a self,
@@ -119,7 +119,7 @@ pub trait MarinadeRequestBuilder<'a, C> {
         lp_mint: Pubkey,
         liq_pool_msol_leg: Pubkey,
         data: marinade_finance::instructions::InitializeData,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn liquid_unstake(
         &'a self,
@@ -127,7 +127,7 @@ pub trait MarinadeRequestBuilder<'a, C> {
         get_msol_from_authority: &'a PubkeyOrKeypair,
         transfer_sol_to: Pubkey,
         msol_amount: u64,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn merge_stakes(
         &'a self,
@@ -136,7 +136,7 @@ pub trait MarinadeRequestBuilder<'a, C> {
         source_stake: Pubkey,
         source_stake_index: u32,
         validator_index: u32,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn remove_liquidity(
         &'a self,
@@ -145,7 +145,7 @@ pub trait MarinadeRequestBuilder<'a, C> {
         transfer_sol_to: Pubkey,
         transfer_msol_to: Pubkey,
         tokens: u64,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn config_lp(
         &'a self,
@@ -154,13 +154,13 @@ pub trait MarinadeRequestBuilder<'a, C> {
         max_fee: Option<Fee>,
         liquidity_target: Option<u64>,
         treasury_bp_cut: Option<Fee>,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn config_marinade(
         &'a self,
         admin_authority: &'a PubkeyOrKeypair,
         params: ConfigMarinadeParams,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn stake_reserve(
         &'a self,
@@ -168,20 +168,20 @@ pub trait MarinadeRequestBuilder<'a, C> {
         validator_vote: Pubkey,
         stake_account: &'a PubkeyOrKeypair,
         rent_payer: &'a PubkeyOrKeypair,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn update_active(
         &'a self,
         stake_account: Pubkey,
         stake_index: u32,
         validator_index: u32,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn update_deactivated(
         &'a self,
         stake_account: Pubkey,
         stake_index: u32,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn order_unstake(
         &'a self,
@@ -189,23 +189,23 @@ pub trait MarinadeRequestBuilder<'a, C> {
         burn_msol_from_authority: &'a PubkeyOrKeypair,
         msol_amount: u64,
         ticket_account: Pubkey,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn claim(
         &'a self,
         ticket_account: Pubkey,
         beneficiary: Pubkey,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn emergency_pause(
         &'a self,
         pause_authority: &'a PubkeyOrKeypair,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn emergency_resume(
         &'a self,
         pause_authority: &'a PubkeyOrKeypair,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn redelegate(
         &'a self,
@@ -217,7 +217,7 @@ pub trait MarinadeRequestBuilder<'a, C> {
         stake_index: u32,
         source_validator_index: u32,
         dest_validator_index: u32,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 
     fn withdraw_stake_account(
         &'a self,
@@ -230,7 +230,7 @@ pub trait MarinadeRequestBuilder<'a, C> {
         stake_index: u32,
         msol_amount: u64,
         beneficiary: Pubkey,
-    ) -> anyhow::Result<RequestBuilder<C>>;
+    ) -> anyhow::Result<RequestBuilder<'a, C>>;
 }
 
 impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> for RpcMarinade<C> {
@@ -240,7 +240,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         validator_vote: Pubkey,
         score: u32,
         rent_payer: &'a PubkeyOrKeypair,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         verify_manager_authority(&self.state, &validator_manager_authority.pubkey())?;
         let mut builder = add_validator(
             &self.program,
@@ -265,7 +265,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         validator_vote: Pubkey,
         validator_index: u32,
         score: u32,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         verify_manager_authority(&self.state, &validator_manager_authority.pubkey())?;
         let mut builder = set_validator_score(
             &self.program,
@@ -285,7 +285,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         &'a self,
         validator_manager_authority: &'a PubkeyOrKeypair,
         extra_runs: u32,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         verify_manager_authority(&self.state, &validator_manager_authority.pubkey())?;
         let mut builder = config_validator_system(
             &self.program,
@@ -305,7 +305,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         stake_account: Pubkey,
         stake_index: u32,
         validator_index: u32,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         verify_manager_authority(&self.state, &validator_manager_authority.pubkey())?;
         let mut builder = emergency_unstake(
             &self.program,
@@ -326,7 +326,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         validator_manager_authority: &'a PubkeyOrKeypair,
         validator_vote: Pubkey,
         validator_index: u32,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         verify_manager_authority(&self.state, &validator_manager_authority.pubkey())?;
         let mut builder = remove_validator(
             &self.program,
@@ -346,7 +346,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         transfer_from: &'a PubkeyOrKeypair,
         mint_to: Pubkey,
         lamports: u64,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         let mut builder = add_liquidity(
             &self.program,
             &self.instance_pubkey,
@@ -365,7 +365,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         &'a self,
         admin_authority: &'a PubkeyOrKeypair,
         params: ChangeAuthorityData,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         verify_admin_authority(&self.state, &admin_authority.pubkey())?;
         let mut builder =
             change_authority(&self.program, &self.instance_pubkey, &self.state, params)?;
@@ -382,7 +382,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         split_stake_rent_payer: &'a PubkeyOrKeypair,
         stake_index: u32,
         validator_index: u32,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         let mut builder = deactivate_stake(
             &self.program,
             &self.instance_pubkey,
@@ -407,7 +407,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         transfer_from: &'a PubkeyOrKeypair,
         mint_to: Pubkey,
         lamports: u64,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         let mut builder = deposit(
             &self.program,
             &self.instance_pubkey,
@@ -430,7 +430,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         validator_index: u32,
         validator_vote: Pubkey,
         rent_payer: &'a PubkeyOrKeypair,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         let mut builder = deposit_stake_account(
             &self.program,
             &self.instance_pubkey,
@@ -460,7 +460,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         split_stake_account: &'a PubkeyOrKeypair,
         split_stake_rent_payer: &'a PubkeyOrKeypair,
         desired_amount: u64,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         verify_manager_authority(&self.state, &validator_manager_authority.pubkey())?;
         let mut builder = partial_unstake(
             &self.program,
@@ -496,7 +496,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         lp_mint: Pubkey,
         liq_pool_msol_leg: Pubkey,
         data: marinade_finance::instructions::InitializeData,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         Ok(initialize(
             &self.program,
             &state.pubkey(),
@@ -518,7 +518,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         get_msol_from_authority: &'a PubkeyOrKeypair,
         transfer_sol_to: Pubkey,
         msol_amount: u64,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         let mut builder = liquid_unstake(
             &self.program,
             &self.instance_pubkey,
@@ -541,7 +541,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         source_stake: Pubkey,
         source_stake_index: u32,
         validator_index: u32,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         let builder = merge_stakes(
             &self.program,
             &self.instance_pubkey,
@@ -562,7 +562,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         transfer_sol_to: Pubkey,
         transfer_msol_to: Pubkey,
         tokens: u64,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         let mut builder = remove_liquidity(
             &self.program,
             &self.instance_pubkey,
@@ -586,7 +586,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         max_fee: Option<Fee>,
         liquidity_target: Option<u64>,
         treasury_bp_cut: Option<Fee>,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         verify_admin_authority(&self.state, &admin_authority.pubkey())?;
         let mut builder = config_lp(
             &self.program,
@@ -607,7 +607,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         &'a self,
         admin_authority: &'a PubkeyOrKeypair,
         params: ConfigMarinadeParams,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         verify_admin_authority(&self.state, &admin_authority.pubkey())?;
         let mut builder =
             config_marinade(&self.program, &self.instance_pubkey, &self.state, params)?;
@@ -623,7 +623,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         validator_vote: Pubkey,
         stake_account: &'a PubkeyOrKeypair,
         rent_payer: &'a PubkeyOrKeypair,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         let mut builder = stake_reserve(
             &self.program,
             &self.instance_pubkey,
@@ -647,7 +647,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         stake_account: Pubkey,
         stake_index: u32,
         validator_index: u32,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         update_active(
             &self.program,
             &self.instance_pubkey,
@@ -662,7 +662,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         &'a self,
         stake_account: Pubkey,
         stake_index: u32,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         update_deactivated(
             &self.program,
             &self.instance_pubkey,
@@ -678,7 +678,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         burn_msol_from_authority: &'a PubkeyOrKeypair,
         msol_amount: u64,
         ticket_account: Pubkey,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         let mut builder = order_unstake(
             &self.program,
             &self.instance_pubkey,
@@ -698,7 +698,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         &'a self,
         ticket_account: Pubkey,
         beneficiary: Pubkey,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         claim(
             &self.program,
             &self.instance_pubkey,
@@ -710,7 +710,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
     fn emergency_pause(
         &'a self,
         pause_authority: &'a PubkeyOrKeypair,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         verify_pause_authority(&self.state, &pause_authority.pubkey())?;
         let mut builder = emergency_pause(&self.program, &self.instance_pubkey, &self.state)?;
         if let Some(signer) = pause_authority.use_keypair() {
@@ -722,7 +722,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
     fn emergency_resume(
         &'a self,
         pause_authority: &'a PubkeyOrKeypair,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         verify_pause_authority(&self.state, &pause_authority.pubkey())?;
         let mut builder = emergency_resume(&self.program, &self.instance_pubkey, &self.state)?;
         if let Some(signer) = pause_authority.use_keypair() {
@@ -741,7 +741,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         stake_index: u32,
         source_validator_index: u32,
         dest_validator_index: u32,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         let mut builder = redelegate(
             &self.program,
             &self.instance_pubkey,
@@ -778,7 +778,7 @@ impl<'a, C: Deref<Target = impl Signer> + Clone> MarinadeRequestBuilder<'a, C> f
         stake_index: u32,
         msol_amount: u64,
         beneficiary: Pubkey,
-    ) -> anyhow::Result<RequestBuilder<C>> {
+    ) -> anyhow::Result<RequestBuilder<'a, C>> {
         let mut builder = withdraw_stake_account(
             &self.program,
             &self.instance_pubkey,
