@@ -5,3 +5,8 @@ pub mod transactions;
 
 pub use solana_sdk;
 pub use spl_associated_token_account;
+
+use anchor_client::RequestBuilder as AnchorRequestBuilder;
+use solana_sdk::signer::Signer;
+
+pub type RequestBuilder<'a, C> = AnchorRequestBuilder<'a, C, Box<dyn Signer + 'a>>;

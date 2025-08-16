@@ -1,5 +1,6 @@
 #![allow(clippy::too_many_arguments)]
-use anchor_client::{Program, RequestBuilder};
+use crate::RequestBuilder;
+use anchor_client::Program;
 use marinade_finance::state::liq_pool::LiqPool;
 use marinade_finance::state::stake_system::StakeSystem;
 use marinade_finance::state::validator_system::ValidatorRecord;
